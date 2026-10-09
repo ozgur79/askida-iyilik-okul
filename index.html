@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Askıda İyilik</title>
+<!-- Okul geneli prototip: kişinin ihtiyacı değil, okulun sorunu. Kaynak: Atölye harezmiOkulIciAskidaHizmet/uygulama/*.md ve site2.
+     GERÇEK ADLAR İÇERİR (öğretmenler + TEKNOFEST takımı): herkese açık yayınlanmaz. İdareci/hizmetli/kantin kurgusal. -->
+<style>
+:root{
+  --bg:#faf7f0;--kart:#fff;--yazi:#1f1c16;--soluk:#6e6656;--cizgi:#e6dfd0;
+  --vurgu:#b5741a;--vurgu-a:#f8ecd6;--yesil:#2f7a55;--yesil-a:#e2f1e8;--kirmizi:#a8443a;--kirmizi-a:#f8e3e0;--r:12px;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#14130f;--kart:#1d1b16;--yazi:#f3ede1;--soluk:#b5ab98;--cizgi:#3a352b;
+  --vurgu:#e9a23b;--vurgu-a:#33280f;--yesil:#7fb79a;--yesil-a:#18291f;--kirmizi:#d9776b;--kirmizi-a:#35201c;
+}}
+*{box-sizing:border-box}
+html,body{overflow-x:hidden}
+body{margin:0;background:var(--bg);color:var(--yazi);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--cizgi)}
+.ust{max-width:900px;margin:0 auto;padding:10px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.ust h1{font-size:17px;margin:0;flex:1;min-width:150px}
+.ust h1 small{color:var(--soluk);font-weight:500;font-size:12px;margin-left:6px}
+.kim{font-size:13px;color:var(--soluk);display:flex;gap:6px;align-items:center;flex-wrap:wrap;min-width:0}
+select,input,textarea,button{font:inherit;color:inherit}
+select,input,textarea{background:var(--kart);border:1px solid var(--cizgi);border-radius:8px;padding:7px 9px;width:100%}
+.kim select{width:auto;max-width:230px}
+nav{max-width:900px;margin:0 auto;padding:0 16px;display:flex;gap:2px;overflow-x:auto}
+nav button{background:none;border:0;border-bottom:2px solid transparent;padding:8px 10px;cursor:pointer;color:var(--soluk);white-space:nowrap}
+nav button.on{color:var(--yazi);border-color:var(--vurgu);font-weight:600}
+main{max-width:900px;margin:0 auto;padding:16px 16px 90px}
+.btn{background:var(--kart);border:1px solid var(--cizgi);border-radius:8px;padding:7px 12px;cursor:pointer}
+.btn:hover{border-color:var(--soluk)}
+.btn.ana{background:var(--vurgu);color:#fff;border-color:var(--vurgu)}
+@media (prefers-color-scheme:dark){.btn.ana{color:#14130f}}
+.btn.kucuk{padding:3px 9px;font-size:13px}
+.btn.tehlike{color:var(--kirmizi)}
+.nabiz{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.nabiz div{background:var(--kart);border:1px solid var(--cizgi);border-radius:var(--r);padding:10px 12px}
+.nabiz b{display:block;font-size:22px}
+.nabiz span{font-size:12px;color:var(--soluk)}
+.duyuru{background:var(--vurgu-a);border-radius:var(--r);padding:10px 13px;margin-bottom:14px;font-size:14px}
+.duyuru h4{margin:0 0 4px;font-size:13px;color:var(--vurgu)}
+.uyari{background:var(--kirmizi-a);color:var(--kirmizi);border-radius:var(--r);padding:9px 12px;margin:10px 0;font-size:14px}
+.cipler{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.cip{border:1px solid var(--cizgi);background:var(--kart);border-radius:99px;padding:4px 12px;cursor:pointer;font-size:13px}
+.cip.on{background:var(--yazi);color:var(--bg);border-color:var(--yazi)}
+.liste{display:grid;gap:8px}
+.kart{background:var(--kart);border:1px solid var(--cizgi);border-left:4px solid var(--vurgu);border-radius:var(--r);padding:11px 13px;cursor:pointer}
+.kart.bitti{border-left-color:var(--yesil)}
+.kart h3{margin:3px 0 4px;font-size:15px}
+.meta{font-size:12.5px;color:var(--soluk);display:flex;gap:10px;flex-wrap:wrap}
+.etiket{font-size:11.5px;padding:2px 8px;border-radius:99px;border:1px solid var(--cizgi);white-space:nowrap}
+.etiket.kat{background:var(--vurgu-a);border-color:transparent;color:var(--vurgu);font-weight:600}
+.etiket.ok{background:var(--yesil-a);color:var(--yesil);border-color:transparent}
+.etiket.kotu{background:var(--kirmizi-a);color:var(--kirmizi);border-color:transparent}
+.satir{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.bos{color:var(--soluk);text-align:center;padding:30px 0}
+.fab{position:fixed;right:16px;bottom:16px;z-index:6;border-radius:99px;padding:12px 18px;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+.ortu{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10;display:flex;align-items:flex-end;justify-content:center}
+@media(min-width:640px){.ortu{align-items:center}}
+.panel{background:var(--bg);width:100%;max-width:620px;max-height:92vh;overflow:auto;border-radius:16px 16px 0 0;padding:16px}
+@media(min-width:640px){.panel{border-radius:16px}}
+.panel h2{margin:6px 0 8px;font-size:19px}
+.eylemler{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
+.kutu{background:var(--kart);border:1px solid var(--cizgi);border-radius:var(--r);padding:10px 12px;margin:10px 0}
+.kutu h4{margin:0 0 6px;font-size:13px;color:var(--soluk);font-weight:600}
+.iz{font-size:13px;padding:2px 0}
+.iz small,.ipucu{color:var(--soluk)}
+.ipucu{font-size:13px}
+.oge{border-top:1px solid var(--cizgi);padding:8px 0;font-size:14px}
+.oge:first-of-type{border-top:0}
+label{display:block;font-size:13px;color:var(--soluk);margin:10px 0 4px}
+.onay{display:flex;gap:8px;align-items:flex-start;font-size:14px;color:var(--yazi)}
+.onay input{width:auto;margin-top:3px}
+.iki{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{padding:6px 7px;border-bottom:1px solid var(--cizgi);text-align:left}
+th{font-size:12px;color:var(--soluk);font-weight:600}
+td.n,th.n{text-align:center}
+td.bosh{background:var(--kirmizi-a);color:var(--kirmizi)}
+.tablo{overflow-x:auto;background:var(--kart);border:1px solid var(--cizgi);border-radius:var(--r);padding:4px 6px}
+section{margin-bottom:22px}
+section>h3{font-size:15px;margin:0 0 8px}
+.not{font-size:12px;color:var(--soluk);margin-top:6px}
+.kapi{max-width:520px;margin:20px auto;background:var(--kart);border:1px solid var(--cizgi);border-radius:16px;padding:20px}
+.kapi h2{margin-top:0}
+.kod{font-family:ui-monospace,Consolas,monospace;font-size:14px;letter-spacing:.06em}
+</style>
+<style>
+.etiket.acil{background:var(--kirmizi);color:#fff;border-color:transparent;font-weight:700}
+.etiket.yol{background:transparent}
+.kart.acil{border-left-color:var(--kirmizi)}
+.rehber{background:var(--kart);border:1px dashed var(--soluk);border-radius:var(--r);padding:10px 13px;margin-top:18px;font-size:13.5px}
+</style>
+</head>
+<body>
+<header>
+  <div class="ust">
+    <h1>Askıda İyilik <small id="ayEtiket"></small></h1>
+    <div class="kim">Kim olarak bakıyorsun? <select id="kimSec"></select>
+      <button class="btn kucuk" id="kayitBtn">Davet koduyla kayıt</button></div>
+  </div>
+  <nav id="sekmeler"></nav>
+</header>
+<main id="ana"></main>
+<button class="btn ana fab" id="acBtn">+ Sorun bildir</button>
+<div id="modal"></div>
+
+<script>
+// ---- Model: kişinin ihtiyacı değil, OKULUN sorunu ----
+// Her kategorinin bir çözüm yolu var: "gönüllü" (herkes güvenle halledebilir, iyilik sayılır)
+// ya da "sorumlu" (birinin görevi veya tehlikeli; görev iyilik değildir, kredi üretmez).
+const ANAHTAR = 'askidaIyilik.okul.v2';
+const GUN = 864e5;
+const BEKLEME_GUN = 7, ILERLEME_SAAT = 48, ITIRAZ_SAAT = 72;
+const CIFT_AYLIK = 2, GUNLUK_KREDI = 3, ACIK_SINIR = 3, AYLIK_BILDIRIM = 10;
+// TEST: örnek kodlar sınırsız kullanılır (her kullanımda yeni kişi). Canlıya çıkarken bu diziyi boşalt.
+const TEST_KODLARI = [{kod:'AI-7K3Q',rol:'ogrenci'},{kod:'AI-M2XP',rol:'ogrenci'}];
+const ROL_AD = {ogrenci:'Öğrenci', ogretmen:'Öğretmen', idareci:'İdareci', calisan:'Okul çalışanı'};
+const YETKI_AD = {moderator:'moderatör', komisyon:'komisyon', yonetici:'yönetici'};
+const SORUMLU_AD = {hizmet:'Yardımcı hizmetler', bt:'Bilişim (BT)', idare:'Okul idaresi'};
+const BOLGELER = ['Sınıf','Koridor','Tuvalet','Kütüphane','Kantin','Bahçe','Spor salonu','Laboratuvar','Öğretmenler odası','Konferans salonu'];
+const KOMISYON_KAT = {ogrenci:'Öğrenci', ogretmen:'Öğretmen', calisan:'Okul çalışanı'};
+const YASAK = ['Kişiler hakkında yazı (ad, şikâyet, zorbalık): bunlar rehberliğe gider','Para, bağış, satın alma','Ödev, sınav, proje','Telefon, adres, sosyal medya'];
+// Kişisel sorun süzgeci: eşleşirse bildirim alınmaz, rehberliğe yönlendirilir
+const KISISEL = /(zorba|döv|dövü|vurdu|vuruyor|itti|it[ie]kl|alay|dalga geç|tehdit|taciz|hakaret|küfür|kavga|lakap|dışla|beni |bana )/i;
+
+let S;
+function yukle(){ try { const v = localStorage.getItem(ANAHTAR); if (v) return JSON.parse(v); } catch(e){} return tohum(); }
+function kaydet(){ try { localStorage.setItem(ANAHTAR, JSON.stringify(S)); } catch(e){} }
+const ayKodu = d => d.toISOString().slice(0,7);
+const oncekiAy = a => { const [y,m] = a.split('-').map(Number); return ayKodu(new Date(Date.UTC(y, m-2, 1))); };
+const sonrakiAy = a => { const [y,m] = a.split('-').map(Number); return ayKodu(new Date(Date.UTC(y, m, 1))); };
+const ayAd = a => { const [y,m] = a.split('-').map(Number); return new Date(y, m-1, 1).toLocaleDateString('tr-TR',{month:'long',year:'numeric'}); };
+
+function tohum(){
+  const n = Date.now(), g = d => n - d*GUN, ay = ayKodu(new Date());
+  const k = (id, ad, rol, alt, yetki=[], sorumluluk=[]) => ({id, ad, rol, alt, yetki, sorumluluk, aktif:true});
+  const s = o => Object.assign({aciklama:'', yerDetay:'', gorenler:[], gonullu:null, sorumluKisi:null, cozumNotu:'', tesekkur:'', onaylayan:null,
+    krediUretti:null, krediNeden:'', gecmis:[{z:o.olusma, kim:o.bildiren, tip:'ac'}], raporlar:[], gizli:false}, o);
+  const ogr = (ad, sinif) => k(ad.toLocaleLowerCase('tr').replace('ı','i').replace('ü','u').replace('ö','o'), ad, 'ogrenci', sinif);
+  return {
+    ben:'derin', sekme:'akis', filtre:'hepsi', ay, sayac:30, devirKurali:'b', aydinlatma:{}, denetim:{},
+    kisiler:[
+      k('ozgur','Özgür G.','ogretmen','Bilişim',['yonetici'],['bt']),
+      k('eyup','Eyüp K.','ogretmen','Veri ve ölçme',['komisyon']),
+      k('yasemin','Yasemin O.','ogretmen','Paydaş ve değerler',['moderator','komisyon']),
+      ogr('Selim','11'), ogr('Arda','11'), ogr('Batu','10'), ogr('Hakkı','10'), ogr('Ayaz','10'), ogr('Azra','10'),
+      ogr('Eren','9'), ogr('Furkan','10'), ogr('Korhan','9'), ogr('Yusuf','9'), ogr('Derin','9'), ogr('Efe','9'),
+      k('kemal','Kemal S.','idareci','Müdür yardımcısı (kurgusal)',['moderator','komisyon'],['idare']),
+      k('murat','Murat A.','calisan','Yardımcı hizmetli (kurgusal)',[],['hizmet']),
+      k('fatma','Fatma Ç.','calisan','Kantin (kurgusal)'),
+    ],
+    kategoriler:[
+      {ad:'Tesisat', ornek:'damlayan musluk, tıkalı lavabo', yol:'sorumlu', sorumlu:'hizmet', aktif:true},
+      {ad:'Kapı, pencere, mobilya', ornek:'kolu çıkmış kapı, kırık sıra', yol:'sorumlu', sorumlu:'hizmet', aktif:true},
+      {ad:'Akıllı tahta ve bilgisayar', ornek:'açılmayan tahta, ses yok', yol:'sorumlu', sorumlu:'bt', aktif:true},
+      {ad:'Sarf malzemesi', ornek:'bitmiş toner, sabun, peçete', yol:'sorumlu', sorumlu:'idare', aktif:true},
+      {ad:'Güvenlik riski', ornek:'açık kablo, kırık cam', yol:'sorumlu', sorumlu:'idare', acil:true, aktif:true},
+      {ad:'Düzen', ornek:'dağılmış raf, düşmüş pano', yol:'gonullu', aktif:true},
+      {ad:'Bahçe ve hayvanlar', ornek:'maması bitmiş kedi kabı, kuruyan çiçek', yol:'gonullu', aktif:true},
+      {ad:'Kayıp eşya', ornek:'sahipsiz mont, kutu taşmış', yol:'gonullu', aktif:true},
+    ],
+    sorunlar:[
+      s({id:1,bildiren:'derin',kategori:'Tesisat',baslik:'Musluk sürekli damlıyor',bolge:'Tuvalet',yerDetay:'2. kat kız tuvaleti, soldan ikinci lavabo',durum:'acik',olusma:g(1),gorenler:['azra','yusuf']}),
+      s({id:2,bildiren:'arda',kategori:'Akıllı tahta ve bilgisayar',baslik:'Akıllı tahta açılmıyor',bolge:'Sınıf',yerDetay:'10-B',aciklama:'Güç tuşuna basınca ışık yanıp sönüyor, ekran gelmiyor.',durum:'islemde',sorumluKisi:'ozgur',olusma:g(2),
+        gecmis:[{z:g(2),kim:'arda',tip:'ac'},{z:g(1.5),kim:'ozgur',tip:'isleme'}]}),
+      s({id:3,bildiren:'yasemin',kategori:'Sarf malzemesi',baslik:'Yazıcının toneri bitmiş',bolge:'Öğretmenler odası',durum:'acik',olusma:g(.5),gorenler:['eyup']}),
+      s({id:4,bildiren:'efe',kategori:'Bahçe ve hayvanlar',baslik:'Kedi kabında mama bitmiş',bolge:'Bahçe',yerDetay:'Kantin arkası',aciklama:'Mama kantindeki dolapta duruyor.',durum:'acik',olusma:g(.2),gorenler:['hakki']}),
+      s({id:5,bildiren:'eyup',kategori:'Düzen',baslik:'Fen kitapları rafı karışmış',bolge:'Kütüphane',durum:'ustlenildi',gonullu:'korhan',ustlenZ:g(1),olusma:g(2),
+        gecmis:[{z:g(2),kim:'eyup',tip:'ac'},{z:g(1),kim:'korhan',tip:'ustlen'}]}),
+      s({id:6,bildiren:'murat',kategori:'Düzen',baslik:'Duyuru panosundaki kâğıtlar düşmüş',bolge:'Spor salonu',durum:'bekliyor',gonullu:'furkan',ustlenZ:g(5),yaptimZ:g(4),olusma:g(6),
+        gecmis:[{z:g(6),kim:'murat',tip:'ac'},{z:g(5),kim:'furkan',tip:'ustlen'},{z:g(4),kim:'furkan',tip:'yaptim'}]}),
+      s({id:7,bildiren:'fatma',kategori:'Bahçe ve hayvanlar',baslik:'Giriş saksılarındaki çiçekler kuruyor',bolge:'Bahçe',durum:'cozuldu',gonullu:'azra',onaylayan:'fatma',onayZ:g(3),olusma:g(5),krediUretti:true,
+        tesekkur:'Bir haftadır sulanıyor, çiçekler kendine geldi.',gecmis:[{z:g(5),kim:'fatma',tip:'ac'},{z:g(4.5),kim:'azra',tip:'ustlen'},{z:g(3),kim:'fatma',tip:'onay'}]}),
+      s({id:8,bildiren:'kemal',kategori:'Düzen',baslik:'Sandalyeler tören sonrası dağınık kalmış',bolge:'Konferans salonu',durum:'cozuldu',gonullu:'ayaz',onaylayan:'kemal',onayZ:g(5),olusma:g(6),krediUretti:true,
+        tesekkur:'Ertesi sabahki veli toplantısı rahat başladı.',gecmis:[{z:g(6),kim:'kemal',tip:'ac'},{z:g(5.5),kim:'ayaz',tip:'ustlen'},{z:g(5),kim:'kemal',tip:'onay'}]}),
+      s({id:9,bildiren:'yusuf',kategori:'Kapı, pencere, mobilya',baslik:'Sınıf kapısının kolu çıkmış',bolge:'Sınıf',yerDetay:'9-A',durum:'cozuldu',sorumluKisi:'murat',cozumNotu:'Kol yenisiyle değiştirildi.',onaylayan:'yusuf',onayZ:g(2),olusma:g(4),
+        gecmis:[{z:g(4),kim:'yusuf',tip:'ac'},{z:g(3.5),kim:'murat',tip:'isleme'},{z:g(2.5),kim:'murat',tip:'giderildi'},{z:g(2),kim:'yusuf',tip:'onay'}]}),
+      s({id:10,bildiren:'kemal',kategori:'Kayıp eşya',baslik:'Kayıp eşya kutusu taşmış',bolge:'Koridor',durum:'cozuldu',gonullu:'ayaz',onaylayan:'kemal',onayZ:g(3),olusma:g(4),krediUretti:true,
+        tesekkur:'Montlar askıya dizildi, üç tanesi sahibini buldu.',gecmis:[{z:g(4),kim:'kemal',tip:'ac'},{z:g(3.5),kim:'ayaz',tip:'ustlen'},{z:g(3),kim:'kemal',tip:'onay'}]}),
+      s({id:11,bildiren:'kemal',kategori:'Düzen',baslik:'Kantin önündeki masa düzeni bozulmuş',bolge:'Kantin',durum:'cozuldu',gonullu:'ayaz',onaylayan:'kemal',onayZ:g(1),olusma:g(2),krediUretti:false,
+        krediNeden:`Aynı iki kişi arasında bu ay ${CIFT_AYLIK} kredi sınırı doldu`,tesekkur:'',gecmis:[{z:g(2),kim:'kemal',tip:'ac'},{z:g(1.5),kim:'ayaz',tip:'ustlen'},{z:g(1),kim:'kemal',tip:'onay'}]}),
+      s({id:12,bildiren:'eyup',kategori:'Güvenlik riski',baslik:'Bahçe kapısı yanında açıkta kablo',bolge:'Bahçe',yerDetay:'Arka kapı, elektrik panosu yanı',durum:'acik',olusma:g(.1),gorenler:['selim']}),
+      s({id:13,bildiren:'ozgur',kategori:'Bahçe ve hayvanlar',baslik:'Laboratuvar önündeki saksılar devrilmiş',bolge:'Laboratuvar',durum:'cozuldu',gonullu:'batu',onaylayan:'ozgur',onayZ:g(2),olusma:g(3),krediUretti:true,
+        tesekkur:'Toprağı da süpürmüşsün, ders başlamadan her şey yerindeydi.',gecmis:[{z:g(3),kim:'ozgur',tip:'ac'},{z:g(2.5),kim:'batu',tip:'ustlen'},{z:g(2),kim:'ozgur',tip:'onay'}]}),
+      s({id:14,bildiren:'fatma',kategori:'Düzen',baslik:'Teneffüste kantin sırasında hep aynı grup öne geçiyor',bolge:'Kantin',durum:'acik',olusma:g(.6),
+        raporlar:[{kim:'hakki',neden:YASAK[0],z:g(.4),durum:'bekliyor'}]}),
+      s({id:15,bildiren:'selim',kategori:'Tesisat',baslik:'Lavabo tıkalı, su taşıyor',bolge:'Laboratuvar',durum:'acik',olusma:g(9)}),
+    ],
+    krediler:[{kim:'azra',kimden:'fatma',sorun:7,ay,z:g(3)},{kim:'ayaz',kimden:'kemal',sorun:8,ay,z:g(5)},{kim:'ayaz',kimden:'kemal',sorun:10,ay,z:g(3)},{kim:'batu',kimden:'ozgur',sorun:13,ay,z:g(2)}],
+    devir:{derin:1, eren:1},
+    elciler:[{ay:oncekiAy(ay),kat:'ogrenci',kim:null,gerekce:''},{ay:oncekiAy(ay),kat:'ogretmen',kim:null,gerekce:''},
+      {ay:oncekiAy(ay),kat:'calisan',kim:'murat',gerekce:'Öğrencilerin bildirdiği on iki arızanın hepsine aynı gün döndü.'}],
+    kodlar:[{kod:'AI-7K3Q',rol:'ogrenci',kullanildi:false},{kod:'AI-M2XP',rol:'ogrenci',kullanildi:false}],
+    islemler:[],
+  };
+}
+
+// ---- Yardımcılar ----
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const kisi = id => S.kisiler.find(k => k.id === id) || {ad:'?', rol:'ogrenci', yetki:[], sorumluluk:[]};
+const ben = () => kisi(S.ben);
+const yetkili = y => ben().yetki.includes(y);
+const ad = id => kisi(id).ad;
+const tarih = z => new Date(z).toLocaleDateString('tr-TR',{day:'numeric',month:'short'});
+const saat = z => new Date(z).toLocaleString('tr-TR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+const bul = id => S.sorunlar.find(i => i.id === id);
+const kat = i => S.kategoriler.find(k => k.ad === i.kategori) || {yol:'sorumlu', sorumlu:'idare'};
+const gonulluYolu = i => kat(i).yol === 'gonullu';
+const benimSorumlulugum = i => !gonulluYolu(i) && ben().sorumluluk.includes(kat(i).sorumlu);
+const komisyonKat = k => k.rol === 'idareci' ? 'calisan' : k.rol;
+const islem = metin => S.islemler.push({z:Date.now(), kim:S.ben, metin});
+const AKTIF = ['acik','ustlenildi','islemde','bekliyor','itirazda'];
+const DURUM = {acik:'Açık', ustlenildi:'Bir gönüllü ilgileniyor', islemde:'Sorumlu ilgileniyor', bekliyor:'Çözüldü mü? Onay bekliyor', cozuldu:'Çözüldü',
+  iptal:'Geri çekildi', kaldirildi:'Kaldırıldı', itirazda:'İtirazda', mukerrer:'Aynı sorun zaten var'};
+const IZ = {ac:'bildirdi', gordum:'"ben de gördüm" dedi', ustlen:'"Ben hallederim" dedi', vazgec:'vazgeçti', yaptim:'"Hallettim" dedi',
+  isleme:'işleme aldı', giderildi:'"Giderildi" dedi', onay:'çözüldüğünü onayladı', eksik:'"Hâlâ duruyor" dedi', iptal:'geri çekti',
+  sure48:'48 saat ilerleme yok, yeniden açıldı', itiraz:'itiraz etti', bildir:'uygunsuz diye bildirdi', gizle:'moderatör kaldırdı',
+  temiz:'moderatör: sorun yok', itirazKredi:'moderatör: iş yapılmış', itirazRed:'moderatör: itiraz reddedildi', mukerrer:'aynı sorunun kopyası olarak kapattı'};
+const bekliyorGun = i => Math.floor((Date.now() - i.olusma) / GUN);
+
+function supur(){
+  const n = Date.now();
+  S.sorunlar.forEach(i => {
+    if (i.durum === 'ustlenildi' && n - i.ustlenZ > ILERLEME_SAAT*36e5){ i.gecmis.push({z:n, kim:null, tip:'sure48'}); i.durum = 'acik'; i.gonullu = null; }
+  });
+}
+
+// ---- Kredi: yalnız gönüllü yolunda, onayla. Sınıra takılan iş yine kayda geçer. ----
+function krediEngeli(i, onaylayan){
+  const g = i.gonullu, a = onaylayan, n = Date.now();
+  if (S.krediler.filter(k => k.ay===S.ay && ((k.kim===g && k.kimden===a) || (k.kim===a && k.kimden===g))).length >= CIFT_AYLIK) return `Aynı iki kişi arasında bu ay ${CIFT_AYLIK} kredi sınırı doldu`;
+  if (S.krediler.some(k => k.kim===a && k.kimden===g && n - k.z < 7*GUN)) return 'Karşılıklı döngü: aynı hafta ters yönde kredi var';
+  const bugun = new Date().toDateString();
+  if (S.krediler.filter(k => k.kim===g && new Date(k.z).toDateString()===bugun).length >= GUNLUK_KREDI) return `Günlük ${GUNLUK_KREDI} kredi sınırı`;
+  return null;
+}
+function coz(i, onaylayan){
+  i.durum = 'cozuldu'; i.onayZ = Date.now(); i.onaylayan = onaylayan;
+  if (!gonulluYolu(i) || !i.gonullu) { i.krediUretti = false; i.krediNeden = 'Sorumlu yolu: görev iyilik değildir'; return; }
+  const engel = krediEngeli(i, onaylayan);
+  i.krediUretti = !engel; i.krediNeden = engel || '';
+  if (!engel) S.krediler.push({kim:i.gonullu, kimden:onaylayan, sorun:i.id, ay:S.ay, z:Date.now()});
+}
+const bakiye = id => (S.devir[id]||0) + S.krediler.filter(k => k.kim===id && k.ay===S.ay).length;
+
+// ---- Yetki ----
+function eylemler(i){
+  const b = S.ben, bil = i.bildiren === b, gon = i.gonullu === b, gordu = i.gorenler.includes(b), l = [];
+  const tanik = bil || gordu;  // bildiren ya da "ben de gördüm" diyen çözüldüğünü onaylayabilir
+  if (['acik','ustlenildi','islemde'].includes(i.durum) && !bil && !gordu && !gon) l.push(['gordum','Ben de gördüm']);
+  if (gonulluYolu(i)) {
+    if (i.durum === 'acik' && !bil) l.push(['ustlen','Ben hallederim','ana']);
+    if (i.durum === 'ustlenildi' && gon) { l.push(['yaptim','Hallettim','ana']); l.push(['vazgec','Vazgeç']); }
+    if (i.durum === 'bekliyor' && gon && Date.now() - i.yaptimZ > ITIRAZ_SAAT*36e5) l.push(['itiraz',`${ITIRAZ_SAAT} saattir onay yok: itiraz et`]);
+  } else if (benimSorumlulugum(i)) {
+    if (i.durum === 'acik') { l.push(['isleme','İşleme aldım','ana']); l.push(['mukerrer','Kopya: aynı sorun zaten var']); }
+    if (i.durum === 'islemde' && i.sorumluKisi === b) l.push(['giderildi','Giderildi','ana']);
+  }
+  if (i.durum === 'bekliyor' && tanik && !gon) { l.push(['onay','Evet, çözüldü','ana']); l.push(['eksik','Hâlâ duruyor']); }
+  if (i.durum === 'acik' && bil) l.push(['iptal','Geri çek','tehlike']);
+  if (AKTIF.includes(i.durum) && !bil && !gon && !i.raporlar.some(r => r.kim===b)) l.push(['bildir','Uygunsuz bildir','tehlike']);
+  if (yetkili('moderator')) {
+    if (i.raporlar.some(r => r.durum==='bekliyor')) { l.push(['gizle','Kaldır (moderatör)','tehlike']); l.push(['temiz','Sorun yok (moderatör)']); }
+    if (i.durum === 'itirazda') { l.push(['itirazKredi','İş yapılmış (moderatör)','ana']); l.push(['itirazRed','İtirazı reddet (moderatör)']); }
+  }
+  return l;
+}
+
+function uygula(e, id){
+  const i = bul(id), iz = (tip, not) => i.gecmis.push({z:Date.now(), kim:S.ben, tip, not});
+  const sor = (s, zorunlu) => { const m = prompt(s); if (m === null) return null; if (zorunlu && !m.trim()) { alert('Boş bırakılamaz.'); return null; } return m.trim(); };
+  switch(e){
+    case 'gordum': i.gorenler.push(S.ben); iz('gordum'); break;
+    case 'ustlen': i.gonullu = S.ben; i.ustlenZ = Date.now(); i.durum = 'ustlenildi'; iz('ustlen'); break;
+    case 'vazgec': i.gonullu = null; i.durum = 'acik'; iz('vazgec'); break;
+    case 'yaptim': i.durum = 'bekliyor'; i.yaptimZ = Date.now(); iz('yaptim'); break;
+    case 'isleme': i.sorumluKisi = S.ben; i.durum = 'islemde'; iz('isleme'); break;
+    case 'giderildi': { const m = sor('Ne yapıldı? (herkes görür; ör. "Conta değiştirildi")', true); if (m === null) return;
+      i.cozumNotu = m; i.durum = 'bekliyor'; i.yaptimZ = Date.now(); iz('giderildi'); break; }
+    case 'mukerrer': { const m = sor('Hangi sorunun kopyası? (numara, ör. 1)', true); if (m === null) return;
+      i.durum = 'mukerrer'; iz('mukerrer', '#' + m.replace('#','')); break; }
+    case 'onay': {
+      let m = '';
+      if (i.gonullu) { m = sor(`${ad(i.gonullu)}'a teşekkür: okulda ne değişti? (isteğe bağlı)`); if (m === null) return; }
+      i.tesekkur = m; iz('onay'); coz(i, S.ben); break; }
+    case 'eksik': { const m = sor('Ne eksik kaldı?', true); if (m === null) return;
+      i.durum = i.gonullu ? 'ustlenildi' : 'islemde'; i.ustlenZ = Date.now(); iz('eksik', m); break; }
+    case 'itiraz': i.durum = 'itirazda'; iz('itiraz'); break;
+    case 'iptal': i.durum = 'iptal'; iz('iptal'); break;
+    case 'bildir': {
+      const sec = prompt('Neden uygunsuz?\n' + YASAK.map((y,k)=>`${k+1}. ${y}`).join('\n') + '\n5. Diğer\n\nNumara yaz:'); if (sec === null) return;
+      i.raporlar.push({kim:S.ben, neden:YASAK[+sec-1] || 'Diğer', z:Date.now(), durum:'bekliyor'}); iz('bildir'); break; }
+    case 'gizle': { const m = sor('Kaldırma gerekçesi (işlem günlüğüne yazılır):', true); if (m === null) return;
+      i.raporlar.forEach(r => r.durum='kaldirildi'); i.durum = 'kaldirildi'; i.gizli = true; iz('gizle', m); islem(`#${i.id} kaldırıldı: ${m}`); break; }
+    case 'temiz': i.raporlar.forEach(r => r.durum='temiz'); iz('temiz'); islem(`#${i.id} bildirimi: sorun yok`); break;
+    case 'itirazKredi': iz('itirazKredi'); coz(i, i.bildiren); islem(`#${i.id} itiraz: iş yapılmış sayıldı`); break;
+    case 'itirazRed': i.durum = 'ustlenildi'; i.ustlenZ = Date.now(); iz('itirazRed'); islem(`#${i.id} itiraz reddedildi`); break;
+  }
+  kaydet(); detay(id); ciz();
+}
+
+// ---- Çizim ----
+function sekmeler(){
+  const l = [['akis','Akış'],['defter','İyilik Defterim']];
+  if (ben().sorumluluk.length) l.push(['bana','Bana gelenler']);
+  if (yetkili('moderator')) l.push(['moderasyon','Moderasyon']);
+  if (yetkili('komisyon')) l.push(['komisyon','Komisyon']);
+  if (yetkili('yonetici')) l.push(['yonetim','Yönetim']);
+  return l;
+}
+function ciz(){
+  supur();
+  $('#ayEtiket').textContent = ayAd(S.ay);
+  $('#kimSec').innerHTML = S.kisiler.filter(k=>k.aktif).map(k =>
+    `<option value="${k.id}" ${k.id===S.ben?'selected':''}>${esc(k.ad)}: ${ROL_AD[k.rol]}${k.yetki.length?' + '+k.yetki.map(y=>YETKI_AD[y]).join(', '):''}</option>`).join('');
+  const kapi = kapiEkrani();
+  $('#acBtn').style.display = kapi ? 'none' : '';
+  if (kapi) { $('#sekmeler').innerHTML = ''; $('#ana').innerHTML = kapi; return; }
+  const l = sekmeler(); if (!l.some(s => s[0]===S.sekme)) S.sekme = 'akis';
+  $('#sekmeler').innerHTML = l.map(([k,a]) => `<button data-sekme="${k}" class="${S.sekme===k?'on':''}">${a}</button>`).join('');
+  $('#ana').innerHTML = ({akis, defter, bana, moderasyon, komisyon, yonetim})[S.sekme]();
+}
+
+const REHBER = `<div class="rehber"><b>Kişisel bir sorun mu yaşıyorsun?</b> Zorbalık, kavga, dışlanma, üzüntü buraya yazılmaz:
+  burası okulun eşyaları ve alanları için. <b>Rehberlik servisine</b> git ya da güvendiğin bir öğretmene hemen söyle. Acil bir durumda nöbetçi öğretmene haber ver.</div>`;
+
+function kapiEkrani(){
+  const k = ben();
+  if (S.aydinlatma[k.id]) return '';
+  return `<div class="kapi"><h2>Başlamadan önce</h2>
+    <p><b>Askıda İyilik nedir?</b> Okulda gördüğün bir sorunu dile getirirsin: damlayan musluk, açılmayan akıllı tahta, maması bitmiş kedi kabı.
+      Kolay ve güvenli olanları bir gönüllü halleder; birinin görevi olanlar doğrudan sorumlusuna gider.</p>
+    <p><b>Kişiler hakkında yazılmaz.</b> Burada bir yeri ya da eşyayı anlatırsın, kimseyi değil. Kişisel bir sorunun varsa rehberlik servisine git.</p>
+    <p><b>Senden ne tutuyoruz?</b> Görünen adın, rolün ve bildirdiğin/çözdüğün sorunlar. Telefon, adres, fotoğraf, doğum tarihi tutulmaz.</p>
+    <p><b>Sıralama yok.</b> Herkes okulun toplam sayılarını görür; senin defterini yalnız sen görürsün. Özel mesaj da yok.</p>
+    <div class="eylemler"><button class="btn ana" id="aydinlatmaOk">Okudum, anladım</button></div>
+    <div class="not">Taslak metin; sade dil için Edebiyat öğretmeniyle gözden geçirilecek.</div></div>`;
+}
+
+function nabiz(){
+  const hafta = Date.now() - 7*GUN, coz = S.sorunlar.filter(i => i.durum==='cozuldu' && i.onayZ > hafta);
+  return `<div class="nabiz"><div><b>${coz.length}</b><span>sorun bu hafta çözüldü</span></div>
+    <div><b>${coz.filter(i=>i.gonullu).length}</b><span>bunlardan gönüllü eliyle</span></div>
+    <div><b>${S.sorunlar.filter(i => AKTIF.includes(i.durum) && !i.gizli).length}</b><span>açık sorun</span></div></div>`;
+}
+function elciDuyurusu(){
+  const l = S.elciler.filter(e => e.ay === oncekiAy(S.ay) && e.kim);
+  if (!l.length) return '';
+  return `<div class="duyuru"><h4>${ayAd(oncekiAy(S.ay))} iyilik elçileri</h4>${l.map(e =>
+    `<div class="iz"><b>${esc(ad(e.kim))}</b> (${KOMISYON_KAT[e.kat]}): “${esc(e.gerekce)}”</div>`).join('')}</div>`;
+}
+function kart(i){
+  const k = kat(i), bitti = i.durum === 'cozuldu', acil = k.acil && !bitti;
+  const yol = gonulluYolu(i) ? '🙋 gönüllü' : `🔧 ${SORUMLU_AD[k.sorumlu]}`;
+  return `<div class="kart ${bitti?'bitti':''} ${acil?'acil':''}" data-ac="${i.id}">
+    <div class="satir">${acil?'<span class="etiket acil">ACİL</span>':''}<span class="etiket kat">${esc(i.kategori)}</span>
+      <span class="etiket ${bitti?'ok':''}">${DURUM[i.durum]}</span><span class="etiket yol">${yol}</span>
+      ${AKTIF.includes(i.durum) && bekliyorGun(i) >= BEKLEME_GUN ? `<span class="etiket kotu">${bekliyorGun(i)} gündür açık</span>`:''}
+      ${i.raporlar.some(r=>r.durum==='bekliyor')&&yetkili('moderator')?'<span class="etiket kotu">bildirildi</span>':''}</div>
+    <h3>${esc(i.baslik)}</h3>
+    <div class="meta"><span>📍 ${esc(i.bolge)}${i.yerDetay?' · '+esc(i.yerDetay):''}</span><span>${esc(ad(i.bildiren))} · ${tarih(i.olusma)}</span>
+      ${i.gorenler.length?`<span>👀 ${i.gorenler.length+1} kişi gördü</span>`:''}${i.gonullu?`<span>🤝 ${esc(ad(i.gonullu))}</span>`:''}</div></div>`;
+}
+// Sıralama kişiyi değil sorunu sıralar: önce acil, sonra kaç kişinin gördüğü, sonra yeni
+const sirala = l => l.sort((a,c) => (!!kat(c).acil - !!kat(a).acil) || (c.gorenler.length - a.gorenler.length) || (c.olusma - a.olusma));
+function akis(){
+  const b = S.ben;
+  let l = S.sorunlar.filter(i => !i.gizli);
+  if (S.filtre === 'hepsi') l = l.filter(i => AKTIF.includes(i.durum));
+  else if (S.filtre === 'gonullu') l = l.filter(i => i.durum==='acik' && gonulluYolu(i));
+  else if (S.filtre === 'benim') l = l.filter(i => i.bildiren===b || i.gonullu===b || i.gorenler.includes(b));
+  else if (S.filtre === 'cozulen') l = l.filter(i => i.durum==='cozuldu');
+  const onayim = S.sorunlar.filter(i => i.durum==='bekliyor' && (i.bildiren===b || i.gorenler.includes(b)) && i.gonullu!==b);
+  const cip = (k,a) => `<button class="cip ${S.filtre===k?'on':''}" data-filtre="${k}">${a}</button>`;
+  return nabiz() + elciDuyurusu()
+    + (onayim.length ? `<div class="duyuru">Çözüldü denen ${onayim.length} sorun senin onayını bekliyor: ${onayim.map(i=>`<a href="#" data-ac="${i.id}">${esc(i.baslik)}</a>`).join(', ')}</div>` : '')
+    + `<div class="cipler">${cip('hepsi','Açık sorunlar')}${cip('gonullu','🙋 Gönüllü bekleyenler')}${cip('benim','Benimle ilgili')}${cip('cozulen','Çözülenler')}</div>`
+    + `<div class="liste">${sirala(l).map(kart).join('') || '<div class="bos">Burada sorun yok.</div>'}</div>` + REHBER;
+}
+
+// Defter: yalnız kişinin kendisi görür. Kredi sayısı ve "kredi üretmedi" gerekçesi burada yok:
+// kredi yalnız komisyon adaylığı içindir; kişi yaptığı her işi eşit görür.
+function defter(){
+  const b = S.ben;
+  const cozdum = S.sorunlar.filter(i => i.gonullu===b && i.durum==='cozuldu');
+  const bildirdim = S.sorunlar.filter(i => i.bildiren===b);
+  const sorumlu = S.sorunlar.filter(i => i.sorumluKisi===b && i.durum==='cozuldu');
+  const oge = i => `<div class="oge" data-ac="${i.id}" style="cursor:pointer"><b>${esc(i.baslik)}</b> <small class="ipucu">📍 ${esc(i.bolge)} · ${DURUM[i.durum]}</small>
+    ${i.tesekkur?`<div>“${esc(i.tesekkur)}” <small class="ipucu">— ${esc(ad(i.onaylayan))}</small></div>`:''}</div>`;
+  const blok = (bas, l, bos) => `<section><h3>${bas}</h3><div class="kutu">${l.map(oge).join('') || `<div class="ipucu">${bos}</div>`}</div></section>`;
+  return `<div class="ipucu" style="margin-bottom:12px">Bu defteri yalnız sen görürsün. Puan yok, sıra yok; okulda neyi değiştirdiğin.</div>`
+    + blok('Gönüllü çözdüklerim', cozdum, 'Henüz yok. "Gönüllü bekleyenler"e bir göz at.')
+    + blok('Dile getirdiklerim', bildirdirim(bildirdim), 'Okulda bir sorun gördüğünde buraya düşer.')
+    + (ben().sorumluluk.length ? blok('Görevim gereği giderdiklerim', sorumlu, 'Henüz yok.') + '<div class="not">Bunlar görevin; iyilik defterine sayılmaz ama emeğin görünür kalsın diye burada.</div>' : '');
+}
+const bildirdirim = l => l.slice().sort((a,c) => c.olusma - a.olusma);
+
+function bana(){
+  const l = S.sorunlar.filter(i => !gonulluYolu(i) && ben().sorumluluk.includes(kat(i).sorumlu) && AKTIF.includes(i.durum) && !i.gizli);
+  return `<div class="ipucu" style="margin-bottom:10px">${ben().sorumluluk.map(s=>SORUMLU_AD[s]).join(', ')} sorumluluğuna düşen açık sorunlar. Acil olanlar ve çok kişinin gördükleri üstte.</div>
+    <div class="liste">${sirala(l).map(kart).join('') || '<div class="bos">Sana gelen açık sorun yok.</div>'}</div>`;
+}
+
+function moderasyon(){
+  const bildirilen = S.sorunlar.filter(i => i.raporlar.some(r => r.durum==='bekliyor'));
+  const itiraz = S.sorunlar.filter(i => i.durum==='itirazda');
+  const sat = (i, ek) => `<div class="oge" data-ac="${i.id}" style="cursor:pointer"><b>${esc(i.baslik)}</b> <small class="ipucu">bildiren ${esc(ad(i.bildiren))}</small><div class="ipucu">${ek}</div></div>`;
+  return `<section><h3>Uygunsuz bildirilenler</h3><div class="kutu">${bildirilen.map(i => sat(i, i.raporlar.filter(r=>r.durum==='bekliyor').map(r=>esc(r.neden)).join(' · '))).join('') || '<div class="ipucu">Bekleyen bildirim yok.</div>'}</div>
+    <div class="not">Kişiyi ya da grubu hedef alan bir yazı varsa kaldır ve konuyu rehberlik servisine ilet; uygulamada tartışılmaz.</div></section>
+    <section><h3>İtirazlar</h3><div class="kutu">${itiraz.map(i => sat(i, `${esc(ad(i.gonullu))} "hallettim" dedi, ${ITIRAZ_SAAT} saattir onay gelmedi`)).join('') || '<div class="ipucu">Bekleyen itiraz yok.</div>'}</div></section>
+    <section><h3>İşlem günlüğü</h3><div class="kutu">${S.islemler.slice().reverse().map(x => `<div class="iz"><small>${saat(x.z)}</small> ${esc(ad(x.kim))}: ${esc(x.metin)}</div>`).join('') || '<div class="ipucu">Henüz işlem yok.</div>'}</div></section>`;
+}
+
+// Komisyon: üyeler aday olamaz (çıkar çatışması). Sayı adaylığı belirler, seçimi komisyon yapar.
+function adaylar(kt){
+  return S.kisiler.filter(k => k.aktif && komisyonKat(k)===kt && !k.yetki.includes('komisyon') && bakiye(k.id) > 0)
+    .sort((a,c) => bakiye(c.id) - bakiye(a.id)).slice(0,5);
+}
+function komisyon(){
+  if (!S.denetim[S.ay]) {
+    const biten = S.sorunlar.filter(i => i.krediUretti && S.krediler.some(k=>k.sorun===i.id && k.ay===S.ay));
+    S.denetim[S.ay] = biten.sort(() => Math.random()-.5).slice(0, Math.max(1, Math.round(biten.length*.1))).map(i=>i.id); kaydet();
+  }
+  const blok = kt => {
+    const l = adaylar(kt);
+    return `<div class="kutu"><h4>${KOMISYON_KAT[kt]} adayları</h4>
+      ${l.map(k => {
+        const iy = S.sorunlar.filter(i => i.gonullu===k.id && i.durum==='cozuldu');
+        return `<label class="onay oge"><input type="radio" name="sec-${kt}" value="${k.id}"><span><b>${esc(k.ad)}</b> <small class="ipucu">${esc(k.alt)} · bakiye ${bakiye(k.id)}</small>
+          ${iy.map(i => `<div class="iz">• ${esc(i.baslik)} <small>(${esc(i.bolge)})</small>${i.tesekkur?` <small>“${esc(i.tesekkur)}”</small>`:''}${i.krediUretti?'':' <small class="ipucu">[kredisiz: '+esc(i.krediNeden)+']</small>'}</div>`).join('')}</span></label>`;
+      }).join('') || '<div class="ipucu">Bu ay aday yok.</div>'}
+      <label class="onay oge"><input type="radio" name="sec-${kt}" value="yok" ${l.length?'':'checked'}><span>Bu ay seçim yok</span></label>
+      <label>Gerekçe (sözel ve bilgilendirici: "okulda şunu değiştirdi")</label><textarea id="ger-${kt}" rows="2"></textarea></div>`;
+  };
+  const den = S.denetim[S.ay].map(bul).filter(Boolean);
+  return `<div class="ipucu" style="margin-bottom:10px">${ayAd(S.ay)} kapanışı. Yalnız gönüllü yolunda çözülen sorunlar kredi üretir. Komisyon üyeleri aday olamaz.</div>
+    <section><h3>Rastgele denetim örneklemi (%10)</h3><div class="kutu">${den.map(i => `<div class="oge" data-ac="${i.id}" style="cursor:pointer">${esc(i.baslik)} <small class="ipucu">${esc(ad(i.gonullu))}: yerinde bakılır, onaylayana sorulur</small></div>`).join('') || '<div class="ipucu">Bu ay kredi üreten iş yok.</div>'}</div></section>
+    <section><h3>Aday listeleri</h3>${Object.keys(KOMISYON_KAT).map(blok).join('')}</section>
+    <section><h3>Ayı kapat</h3><div class="kutu">
+      <label>Devir kuralı (K5, açık karar)</label>
+      <select id="devirSec"><option value="a" ${S.devirKurali==='a'?'selected':''}>(a) Sınırsız devir</option><option value="b" ${S.devirKurali==='b'?'selected':''}>(b) %50 devir (önerilen)</option></select>
+      <label class="onay" style="margin-top:10px"><input type="checkbox" id="izinOk"><span>Seçilen kişilerden duyuru için izin alındı.</span></label>
+      <div class="eylemler"><button class="btn ana" id="ayKapat">${ayAd(S.ay)} ayını kapat</button></div></div></section>`;
+}
+function ayiKapat(){
+  const kararlar = {};
+  for (const kt of Object.keys(KOMISYON_KAT)) {
+    const r = document.querySelector(`input[name="sec-${kt}"]:checked`);
+    if (!r) { alert(`${KOMISYON_KAT[kt]} için bir seçim yap (ya da "Bu ay seçim yok").`); return; }
+    const ger = $('#ger-'+kt).value.trim();
+    if (r.value !== 'yok' && !ger) { alert(`${KOMISYON_KAT[kt]} seçimi için gerekçe yaz.`); return; }
+    kararlar[kt] = {kim: r.value==='yok' ? null : r.value, gerekce: ger};
+  }
+  if (Object.values(kararlar).some(k=>k.kim) && !$('#izinOk').checked) { alert('Duyurudan önce seçilenlerin iznini işaretle.'); return; }
+  S.devirKurali = $('#devirSec').value;
+  const secilen = Object.values(kararlar).map(k=>k.kim).filter(Boolean), yeni = {};
+  S.kisiler.forEach(k => { const t = bakiye(k.id); if (t) yeni[k.id] = secilen.includes(k.id) ? 0 : (S.devirKurali==='a' ? t : t/2); });
+  Object.entries(kararlar).forEach(([kt,k]) => S.elciler.push({ay:S.ay, kat:kt, kim:k.kim, gerekce:k.gerekce}));
+  islem(`${ayAd(S.ay)} kapatıldı (devir ${S.devirKurali})`);
+  S.devir = yeni; S.ay = sonrakiAy(S.ay); S.sekme = 'akis'; kaydet(); ciz();
+}
+
+// Yönetim: kategori özeti (idare için asıl değer), yön matrisi, davet kodu, kategoriler, CSV
+function yonetim(){
+  const roller = Object.keys(ROL_AD);
+  const gon = S.sorunlar.filter(i => i.durum==='cozuldu' && i.gonullu);
+  const hucre = (g,a) => gon.filter(i => kisi(i.gonullu).rol===g && kisi(i.bildiren).rol===a).length;
+  const ozet = S.kategoriler.map(k => {
+    const l = S.sorunlar.filter(i => i.kategori===k.ad && !i.gizli), c = l.filter(i => i.durum==='cozuldu');
+    const ort = c.length ? (c.reduce((t,i) => t + (i.onayZ - i.olusma), 0) / c.length / GUN).toFixed(1) : '·';
+    return `<tr><td>${esc(k.ad)}${k.acil?' <span class="etiket acil">acil</span>':''}</td><td>${k.yol==='gonullu'?'🙋 gönüllü':'🔧 '+SORUMLU_AD[k.sorumlu]}</td>
+      <td class="n">${l.filter(i=>AKTIF.includes(i.durum)).length}</td><td class="n">${c.length}</td><td class="n">${ort}</td></tr>`;
+  }).join('');
+  return `<section><h3>Kategori özeti</h3><div class="tablo"><table>
+      <tr><th>Kategori</th><th>Çözüm yolu</th><th class="n">açık</th><th class="n">çözülen</th><th class="n">ort. gün</th></tr>${ozet}</table></div>
+      <div class="not">İdareye haftalık rapor: hangi tür sorun ne kadar sürede çözülüyor.</div></section>
+    <section><h3>Yön matrisi: kim kimin dile getirdiği sorunu çözdü?</h3><div class="tablo"><table>
+      <tr><th>Gönüllü ↓ / bildiren →</th>${roller.map(r=>`<th class="n">${ROL_AD[r]}</th>`).join('')}</tr>
+      ${roller.map(g => `<tr><th>${ROL_AD[g]}</th>${roller.map(a => { const v = hucre(g,a); return `<td class="n ${v?'':'bosh'}">${v||'·'}</td>`; }).join('')}</tr>`).join('')}
+    </table></div><div class="not">Toplu, anonim; yalnız gönüllü yolu. Boş (kırmızı) hücrelerin dolması başarı göstergesi (site2).</div>
+    <div class="eylemler"><button class="btn" id="csvBtn">Anonim CSV indir</button></div></section>
+  <section><h3>Davet kodları</h3><div class="kutu">
+      <div class="iki"><select id="kodRol">${roller.map(r=>`<option value="${r}">${ROL_AD[r]}</option>`).join('')}</select><button class="btn" id="kodUret">Kod üret</button></div>
+      ${S.kodlar.slice().reverse().map(c => `<div class="oge satir" style="justify-content:space-between"><span class="kod">${c.kod}</span><span class="ipucu">${ROL_AD[c.rol]}</span><span class="etiket ${c.kullanildi?'ok':''}">${c.kullanildi?'kullanıldı':'bekliyor'}</span></div>`).join('')}
+      <div class="not">Herkese açık kayıt yok. Kod tek kullanımlık.</div></div></section>
+  <section><h3>Kategoriler</h3><div class="kutu">
+      ${S.kategoriler.map((k,n) => `<div class="oge satir" style="justify-content:space-between"><span>${esc(k.ad)} <small class="ipucu">${esc(k.ornek||'')}</small></span><button class="btn kucuk" data-kat="${n}">${k.aktif?'Pasifleştir':'Etkinleştir'}</button></div>`).join('')}
+      <div class="iki" style="margin-top:8px"><input id="yeniKat" placeholder="Yeni kategori"><select id="yeniYol"><option value="gonullu">🙋 gönüllü</option>${Object.entries(SORUMLU_AD).map(([k,a])=>`<option value="${k}">🔧 ${a}</option>`).join('')}</select></div>
+      <div class="eylemler"><button class="btn" id="katEkle">Ekle</button></div>
+      <div class="not">Kural: birinin görevi ya da tehlikeli olan iş gönüllü yoluna konmaz.</div></div></section>
+  <button class="btn kucuk tehlike" id="sifirla">Prototip verisini sıfırla</button>`;
+}
+function csvIndir(){
+  const s = ['ay,kategori,yol,bildiren_rol,cozen_rol,cozum_gun,kredi', ...S.sorunlar.filter(i=>i.durum==='cozuldu').map(i =>
+    [ayKodu(new Date(i.onayZ)), i.kategori, kat(i).yol, kisi(i.bildiren).rol, kisi(i.gonullu||i.sorumluKisi).rol, ((i.onayZ-i.olusma)/GUN).toFixed(1), i.krediUretti?1:0]
+      .map(v=>`"${String(v).replace(/"/g,'""')}"`).join(','))].join('\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['﻿'+s], {type:'text/csv'})); a.download = 'askida-iyilik-anonim.csv'; a.click();
+}
+
+// ---- Detay ----
+function detay(id){
+  const i = bul(id); if (!i) return;
+  if (i.gizli && !yetkili('moderator') && i.bildiren!==S.ben) { $('#modal').innerHTML = ''; return; }
+  const k = kat(i), gorebilir = yetkili('moderator') || yetkili('komisyon');
+  $('#modal').innerHTML = `<div class="ortu" data-kapat><div class="panel" data-id="${i.id}">
+    <div class="satir" style="justify-content:space-between"><div class="satir">${k.acil&&i.durum!=='cozuldu'?'<span class="etiket acil">ACİL</span>':''}<span class="etiket kat">${esc(i.kategori)}</span><span class="etiket ${i.durum==='cozuldu'?'ok':''}">${DURUM[i.durum]}</span></div>
+      <button class="btn kucuk" data-kapat>Kapat</button></div>
+    <h2>${esc(i.baslik)}</h2>
+    <div class="meta"><span>📍 ${esc(i.bolge)}${i.yerDetay?' · '+esc(i.yerDetay):''}</span><span>Bildiren: ${esc(ad(i.bildiren))}</span><span>${tarih(i.olusma)}</span>
+      ${i.gorenler.length?`<span>👀 ${[i.bildiren,...i.gorenler].map(ad).map(esc).join(', ')}</span>`:''}</div>
+    ${i.aciklama?`<p>${esc(i.aciklama)}</p>`:''}
+    ${gonulluYolu(i) ? '' : `<div class="kutu"><h4>Çözüm yolu</h4>🔧 <b>${SORUMLU_AD[k.sorumlu]}</b>: birinin görevi${k.acil?' ve tehlikeli':''}; gönüllü müdahale etmez.${i.sorumluKisi?` İlgilenen: <b>${esc(ad(i.sorumluKisi))}</b>`:''}
+      ${k.acil&&i.durum!=='cozuldu'?'<div class="uyari">Dokunma, yaklaşma. Bildirdin; yetkili ilgileniyor. Çok acilse nöbetçi öğretmene de söyle.</div>':''}</div>`}
+    ${i.cozumNotu?`<div class="kutu"><h4>Ne yapıldı</h4>${esc(i.cozumNotu)}</div>`:''}
+    ${i.durum==='cozuldu'&&i.gonullu?`<div class="kutu"><h4>Teşekkür</h4>${i.tesekkur?`“${esc(i.tesekkur)}” <small class="ipucu">— ${esc(ad(i.onaylayan))}</small>`:'<span class="ipucu">Not bırakılmadı.</span>'}
+      ${gorebilir&&!i.krediUretti?`<div class="not">Komisyon notu: kredi üretmedi (${esc(i.krediNeden)}).</div>`:''}</div>`:''}
+    ${yetkili('moderator') && i.raporlar.length ? `<div class="uyari">Bildirimler: ${i.raporlar.map(r=>`${esc(r.neden)} (${r.durum})`).join(' · ')}</div>` : ''}
+    <div class="eylemler">${eylemler(i).map(([e,a,c]) => `<button class="btn ${c||''}" data-eylem="${e}">${a}</button>`).join('')}</div>
+    <div class="kutu"><h4>İz</h4>${i.gecmis.map(g => `<div class="iz"><small>${saat(g.z)}</small> ${g.kim?esc(ad(g.kim)):'Sistem'} ${IZ[g.tip]||g.tip}${g.not?`: <i>${esc(g.not)}</i>`:''}</div>`).join('')}</div>
+  </div></div>`;
+}
+
+// ---- Sorun bildir ----
+function acFormu(){
+  const b = S.ben;
+  const acik = S.sorunlar.filter(i => i.bildiren===b && i.durum==='acik').length;
+  const buAy = S.sorunlar.filter(i => i.bildiren===b && ayKodu(new Date(i.olusma))===S.ay).length;
+  if (acik >= ACIK_SINIR) { alert(`Aynı anda en fazla ${ACIK_SINIR} açık bildirimin olabilir. Başka biri de gördüyse "Ben de gördüm" de.`); return; }
+  if (buAy >= AYLIK_BILDIRIM) { alert(`Bu ay ${AYLIK_BILDIRIM} bildirim sınırına ulaştın.`); return; }
+  $('#modal').innerHTML = `<div class="ortu" data-kapat><div class="panel">
+    <div class="satir" style="justify-content:space-between"><h2>Okulda bir sorun gördüm</h2><button class="btn kucuk" data-kapat>Kapat</button></div>
+    <div class="ipucu">Bir <b>yeri ya da eşyayı</b> anlat, kimseyi değil. Kişisel bir sorunun varsa rehberlik servisine git.</div>
+    <div class="iki"><div><label>Ne tür bir sorun?</label><select id="fKat">${S.kategoriler.filter(k=>k.aktif).map(k=>`<option>${esc(k.ad)}</option>`).join('')}</select></div>
+      <div><label>Nerede?</label><select id="fBolge">${BOLGELER.map(y=>`<option>${y}</option>`).join('')}</select></div></div>
+    <div id="katIpucu" class="ipucu" style="margin-top:6px"></div>
+    <div id="benzer"></div>
+    <label>Tam yer</label><input id="fYer" maxlength="60" placeholder="ör. 2. kat kız tuvaleti, 10-B sınıfı">
+    <label>Kısaca sorun</label><input id="fBaslik" maxlength="80" placeholder="ör. Musluk sürekli damlıyor">
+    <label>Ayrıntı (isteğe bağlı) <span id="sayac">0/280</span></label><textarea id="fAciklama" rows="3" maxlength="280"></textarea>
+    <div class="eylemler"><button class="btn ana" id="fGonder">Bildir</button></div>
+  </div></div>`;
+  formGuncelle();
+}
+// Seçilen kategorinin çözüm yolunu ve aynı yerde açık benzer sorunları göster (kopya bildirimi önler)
+function formGuncelle(){
+  const k = S.kategoriler.find(x => x.ad === $('#fKat').value); if (!k) return;
+  $('#katIpucu').innerHTML = `Örnek: ${esc(k.ornek||'')} · ${k.yol==='gonullu'?'🙋 bir gönüllü halledebilir':'🔧 doğrudan '+SORUMLU_AD[k.sorumlu]+'na gider'}${k.acil?' · <b>acil</b>: dokunma, uzak dur':''}`;
+  const benzer = S.sorunlar.filter(i => AKTIF.includes(i.durum) && !i.gizli && i.kategori===k.ad && i.bolge===$('#fBolge').value);
+  $('#benzer').innerHTML = benzer.length ? `<div class="kutu"><h4>Bu sorun zaten bildirilmiş olabilir</h4>${benzer.map(i =>
+    `<div class="oge satir" style="justify-content:space-between"><span>${esc(i.baslik)} <small class="ipucu">${esc(i.yerDetay)}</small></span>
+      ${i.bildiren!==S.ben && !i.gorenler.includes(S.ben)?`<button class="btn kucuk" data-gordum="${i.id}">Ben de gördüm</button>`:'<small class="ipucu">sen de varsın</small>'}</div>`).join('')}</div>` : '';
+}
+function rehberUyarisi(){
+  $('#modal').innerHTML = `<div class="ortu" data-kapat><div class="panel">
+    <h2>Bu kişisel bir sorun gibi görünüyor</h2>
+    <p>Askıda İyilik okulun <b>eşyaları ve alanları</b> içindir; kişiler hakkında yazı alınmaz. Böyle bir şey yaşıyorsan yalnız değilsin:</p>
+    <ul><li><b>Rehberlik servisine</b> git; konuşulanlar seninle rehber öğretmen arasında kalır.</li>
+      <li>Güvendiğin bir öğretmene ya da nöbetçi öğretmene <b>hemen</b> söyle.</li></ul>
+    <div class="eylemler"><button class="btn ana" data-kapat>Anladım</button></div>
+    <div class="not">Yazdığın metin kaydedilmedi.</div></div></div>`;
+}
+
+function kayitFormu(){
+  $('#modal').innerHTML = `<div class="ortu" data-kapat><div class="panel">
+    <div class="satir" style="justify-content:space-between"><h2>Davet koduyla kayıt</h2><button class="btn kucuk" data-kapat>Kapat</button></div>
+    <p class="ipucu">Kodu okul verir. Örnek: <span class="kod">AI-7K3Q</span> · <span class="kod">AI-M2XP</span>. <i>Test: bu iki kod her seferinde yeni kişi açar.</i></p>
+    <label>Davet kodu</label><input id="kKod" class="kod" placeholder="AI-XXXX">
+    <label>Görünen ad</label><input id="kAd" placeholder="Adın + soyadının baş harfi">
+    <div class="eylemler"><button class="btn ana" id="kGonder">Kaydol</button></div></div></div>`;
+}
+
+// ---- Olaylar ----
+document.addEventListener('input', e => { if (e.target.id === 'fAciklama') $('#sayac').textContent = e.target.value.length + '/280'; });
+document.addEventListener('change', e => {
+  if (e.target.id === 'kimSec') { S.ben = e.target.value; S.filtre = 'hepsi'; $('#modal').innerHTML = ''; kaydet(); ciz(); }
+  if (e.target.id === 'fKat' || e.target.id === 'fBolge') formGuncelle();
+});
+document.addEventListener('click', e => {
+  const t = e.target;
+  if (t.matches('[data-kapat]')) { $('#modal').innerHTML = ''; return; }
+  const sk = t.closest('[data-sekme]'); if (sk) { S.sekme = sk.dataset.sekme; kaydet(); ciz(); return; }
+  const fl = t.closest('[data-filtre]'); if (fl) { S.filtre = fl.dataset.filtre; kaydet(); ciz(); return; }
+  if (t.closest('label.onay') && t.closest('#ana')) return;
+  if (t.dataset.gordum) { const i = bul(+t.dataset.gordum); i.gorenler.push(S.ben); i.gecmis.push({z:Date.now(), kim:S.ben, tip:'gordum'}); kaydet(); $('#modal').innerHTML = ''; ciz(); return; }
+  const ac = t.closest('[data-ac]'); if (ac) { e.preventDefault(); detay(+ac.dataset.ac); return; }
+  const ey = t.closest('[data-eylem]'); if (ey) { uygula(ey.dataset.eylem, +t.closest('.panel').dataset.id); return; }
+  if (t.id === 'aydinlatmaOk') { S.aydinlatma[S.ben] = Date.now(); kaydet(); ciz(); return; }
+  if (t.id === 'acBtn') { acFormu(); return; }
+  if (t.id === 'kayitBtn') { kayitFormu(); return; }
+  if (t.id === 'fGonder') {
+    const baslik = $('#fBaslik').value.trim(), aciklama = $('#fAciklama').value.trim(), yer = $('#fYer').value.trim();
+    if (!baslik) { alert('Sorunu kısaca yaz.'); return; }
+    const metin = ' ' + [baslik, aciklama, yer].join(' ').toLocaleLowerCase('tr') + ' ';
+    const adlar = S.kisiler.map(k => k.ad.split(' ')[0].toLocaleLowerCase('tr')).filter(a => !['derin','ayaz'].includes(a)); // sözlükte de olan adlar elenir
+    if (KISISEL.test(metin) || adlar.some(a => new RegExp(`[^a-zçğıöşü]${a}[^a-zçğıöşü]`).test(metin))) { rehberUyarisi(); return; }
+    if (/(\+?90|0)?\s*5\d{2}[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}|@[a-z0-9_.]{3,}/i.test(metin)) { alert('Telefon ya da sosyal medya bilgisi yazma.'); return; }
+    S.sorunlar.push({id:S.sayac++, bildiren:S.ben, kategori:$('#fKat').value, baslik, aciklama, bolge:$('#fBolge').value, yerDetay:yer,
+      durum:'acik', olusma:Date.now(), gorenler:[], gonullu:null, sorumluKisi:null, cozumNotu:'', tesekkur:'', onaylayan:null, krediUretti:null, krediNeden:'',
+      gecmis:[{z:Date.now(), kim:S.ben, tip:'ac'}], raporlar:[], gizli:false});
+    S.filtre = 'hepsi'; S.sekme = 'akis'; kaydet(); $('#modal').innerHTML = ''; ciz(); return;
+  }
+  if (t.id === 'kGonder') {
+    const kod = $('#kKod').value.trim().toUpperCase(), adi = $('#kAd').value.trim();
+    const ornek = TEST_KODLARI.find(x => x.kod === kod); // test sürecinde örnek kodlar tükenmez
+    const c = ornek || S.kodlar.find(x => x.kod === kod && !x.kullanildi);
+    if (!c) { alert('Kod geçersiz ya da kullanılmış.'); return; }
+    if (!adi) { alert('Görünen ad boş olamaz.'); return; }
+    const id = 'u' + S.sayac++;
+    S.kisiler.push({id, ad:adi, rol:c.rol, alt:'', yetki:[], sorumluluk:[], aktif:true});
+    if (!ornek) c.kullanildi = true;
+    S.ben = id; kaydet(); $('#modal').innerHTML = ''; ciz(); return;
+  }
+  if (t.id === 'ayKapat') { ayiKapat(); return; }
+  if (t.id === 'csvBtn') { csvIndir(); return; }
+  if (t.id === 'kodUret') {
+    const harf = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let kod = 'AI-';
+    for (let n = 0; n < 4; n++) kod += harf[Math.floor(Math.random()*harf.length)];
+    const rol = $('#kodRol').value;
+    S.kodlar.push({kod, rol, kullanildi:false}); islem(`Davet kodu üretildi (${ROL_AD[rol]})`); kaydet(); ciz(); return;
+  }
+  if (t.dataset.kat) { const k = S.kategoriler[+t.dataset.kat]; k.aktif = !k.aktif; kaydet(); ciz(); return; }
+  if (t.id === 'katEkle') { const a = $('#yeniKat').value.trim(), y = $('#yeniYol').value;
+    if (a) { S.kategoriler.push(y==='gonullu' ? {ad:a, ornek:'', yol:'gonullu', aktif:true} : {ad:a, ornek:'', yol:'sorumlu', sorumlu:y, aktif:true}); kaydet(); ciz(); } return; }
+  if (t.id === 'sifirla' && confirm('Tüm prototip verisi silinip örnek veriye dönülsün mü?')) { S = tohum(); kaydet(); ciz(); }
+});
+
+S = yukle(); ciz();
+</script>
+</body>
+</html>
