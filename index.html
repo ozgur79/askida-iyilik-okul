@@ -92,6 +92,11 @@ section>h3{font-size:15px;margin:0 0 8px}
 .etiket.acil{background:var(--kirmizi);color:#fff;border-color:transparent;font-weight:700}
 .etiket.yol{background:transparent}
 .kart.acil{border-left-color:var(--kirmizi)}
+.aktif{display:flex;gap:9px;align-items:center;background:var(--yesil-a);border:1px solid var(--yesil);border-radius:99px;padding:4px 14px 4px 5px;min-width:0}
+.aktif .av{width:30px;height:30px;border-radius:50%;background:var(--yesil);color:var(--bg);display:grid;place-items:center;font-weight:700;flex:none}
+.aktif .ad{font-weight:700;line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.aktif .ro{font-size:12px;color:var(--soluk);line-height:1.15}
+.aktif>div{min-width:0}
 .rehber{background:var(--kart);border:1px dashed var(--soluk);border-radius:var(--r);padding:10px 13px;margin-top:18px;font-size:13.5px}
 </style>
 </head>
@@ -99,7 +104,8 @@ section>h3{font-size:15px;margin:0 0 8px}
 <header>
   <div class="ust">
     <h1>Askıda İyilik <small id="ayEtiket"></small></h1>
-    <div class="kim">Kim olarak bakıyorsun? <select id="kimSec"></select>
+    <div class="aktif" id="aktifKisi" aria-live="polite"></div>
+    <div class="kim">Kişi değiştir: <select id="kimSec" aria-label="Aktif kullanıcıyı değiştir"></select>
       <button class="btn kucuk" id="kayitBtn">Davet koduyla kayıt</button></div>
   </div>
   <nav id="sekmeler"></nav>
@@ -318,6 +324,9 @@ function ciz(){
   $('#ayEtiket').textContent = ayAd(S.ay);
   $('#kimSec').innerHTML = S.kisiler.filter(k=>k.aktif).map(k =>
     `<option value="${k.id}" ${k.id===S.ben?'selected':''}>${esc(k.ad)}: ${ROL_AD[k.rol]}${k.yetki.length?' + '+k.yetki.map(y=>YETKI_AD[y]).join(', '):''}</option>`).join('');
+  const kb = ben(), rolMetni = ROL_AD[kb.rol] + (kb.yetki.length ? ' + ' + kb.yetki.map(y=>YETKI_AD[y]).join(', ') : '');
+  $('#aktifKisi').innerHTML = `<span class="av">${esc(kb.ad.trim().charAt(0).toLocaleUpperCase('tr'))}</span><div><div class="ad">${esc(kb.ad)}</div><div class="ro">Şu an bu kişisin · ${esc(rolMetni)}</div></div>`;
+  document.title = `${kb.ad} · Askıda İyilik`;
   const kapi = kapiEkrani();
   $('#acBtn').style.display = kapi ? 'none' : '';
   if (kapi) { $('#sekmeler').innerHTML = ''; $('#ana').innerHTML = kapi; return; }
@@ -332,7 +341,7 @@ const REHBER = `<div class="rehber"><b>Kişisel bir sorun mu yaşıyorsun?</b> Z
 function kapiEkrani(){
   const k = ben();
   if (S.aydinlatma[k.id]) return '';
-  return `<div class="kapi"><h2>Başlamadan önce</h2>
+  return `<div class="kapi"><h2>Merhaba ${esc(k.ad)}, başlamadan önce</h2>
     <p><b>Askıda İyilik nedir?</b> Okulda gördüğün bir sorunu dile getirirsin: damlayan musluk, açılmayan akıllı tahta, maması bitmiş kedi kabı.
       Kolay ve güvenli olanları bir gönüllü halleder; birinin görevi olanlar doğrudan sorumlusuna gider.</p>
     <p><b>Kişiler hakkında yazılmaz.</b> Burada bir yeri ya da eşyayı anlatırsın, kimseyi değil. Kişisel bir sorunun varsa rehberlik servisine git.</p>
